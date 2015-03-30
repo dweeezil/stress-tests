@@ -9,7 +9,7 @@
 # Probability of overwriting an existing file
 : ${RAND_OVERWRITE:=20}
 
-cd /tank/fish3 || exit
+cd /tank/fish || exit
 
 # Other interesting possible commands.
 #mkdir -p {0..9}
