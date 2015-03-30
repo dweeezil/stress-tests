@@ -1,10 +1,9 @@
 #!/bin/bash
 
-RMPCT=10
+# Chance of removing a file.
+: ${RMPCT:=10}
 
-cd /tank/fish
-#cd /tmp/junk
-#cd /junk
+cd /tank/fish || exit
 
 work() {
 	(

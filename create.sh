@@ -1,28 +1,39 @@
 #!/bin/bash
 
-#ONLY_OVERWRITE=1
-RAND_OVERWRITE=20
+# Set ONLY_CREATE for seeding the filesystem
+: ${ONLY_CREATE:=0}
 
-cd /tank/fish
-#cd /tmp/junk
-#cd /junk
+# Set ONLY_OVERWRITE to never create new files but to only overwrite existing once
+: ${ONLY_OVERWRITE:=0}
 
+# Probability of overwriting an existing file
+: ${RAND_OVERWRITE:=20}
+
+cd /tank/fish3 || exit
+
+# Other interesting possible commands.
 #mkdir -p {0..9}
 #chmod g+s {0..9}
 #setfacl -m d:g:test:rwX -m g:test:rwX {0..9}
 #setfattr -n user.$file -v file $file
 
-mkdir -p {0..9}/{0..9}/{0..9}
+mkdir -p {0..9}/{0..9}/{0..9} || exit
 
 work() {
 	(
 	cd $1
 	for file in {0..1000}; do
-		if [ -f "$file" ]; then
+		# Randomly overwrite
+		if [ "$RAND_OVERWRITE" -a -f "$file" ]; then
 			[ $(( $RANDOM % 100 )) -le $RAND_OVERWRITE ] && echo $file > $file
 			continue
 		fi
-		[ "$ONLY_OVERWRITE" ] || echo $file > $file
+
+		# Force-create
+		[ "$ONLY_CREATE" ] && echo $file > $file && continue
+
+		# Force-overwrite
+		[ "$ONLY_OVERWRITE" -a -f "$file" ] && echo $file > $file
 	done
 	)
 }
