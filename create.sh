@@ -1,13 +1,18 @@
 #!/bin/bash
 
+# NOTE: Probabilities are percentage * 100
+
 # Set ONLY_CREATE for seeding the filesystem
 : ${ONLY_CREATE:=0}
 
 # Set ONLY_OVERWRITE to never create new files but to only overwrite existing once
 : ${ONLY_OVERWRITE:=0}
 
-# Probability of overwriting an existing file
-: ${RAND_OVERWRITE:=20}
+# Probability of overwriting an existing file - default 20%
+: ${RAND_OVERWRITE:=200}
+
+# Probability of overwriting/creating a large file - default 0.1%
+: ${RAND_LARGEFILE:=1}
 
 cd /tank/fish || exit
 
@@ -19,22 +24,49 @@ cd /tank/fish || exit
 
 mkdir -p {0..9}/{0..9}/{0..9} || exit
 
+prob() {
+	[ $(( $RANDOM % 1000 )) -lt $1 ] && return 0
+	return 1
+}
+
+dolargefile() {
+	# Create a 1MiB random file
+	dd if=/dev/urandom count=2048 of=$1 2> /dev/null
+	echo LARGEFILE: $PWD/$1
+}
+
+doregularfile() {
+	# Create a self-referential file
+	echo $1 > $1
+}
+
+dofile() {
+	# Create a self-referential file or a large file depending on the probability
+	[ "${RAND_LARGEFILE}" ] && prob $RAND_LARGEFILE && dolargefile $1 && return 0
+	doregularfile $1
+	return 0
+}
+
+makefile() {
+	# Randomly overwrite
+	[ "$RAND_OVERWRITE" -a -f "$1" ] &&
+		prob $RAND_OVERWRITE && dofile $1 && return
+
+	# Force-create
+	[ "$ONLY_CREATE" ] && dofile $1 && continue
+
+	# Force-overwrite
+	[ "$ONLY_OVERWRITE" -a -f $1 ] && dofile $1 && continue
+
+	# Create if non-existent
+	[ -f "$1" ] || dofile $1
+} 
+
 work() {
 	(
 	cd $1
-	for file in {0..1000}; do
-		# Randomly overwrite
-		[ "$RAND_OVERWRITE" -a -f "$file" ] &&
-	 		[ $(( $RANDOM % 100 )) -le $RAND_OVERWRITE ] && echo $file > $file && continue
-
-		# Force-create
-		[ "$ONLY_CREATE" ] && echo $file > $file && continue
-
-		# Force-overwrite
-		[ "$ONLY_OVERWRITE" -a -f "$file" ] && echo $file > $file && continue
-
-		# Create if non-existent
-		[ -f "$file" ] || echo $file > $file
+	for file in {0..5000}; do
+		makefile $file
 	done
 	)
 }
