@@ -9,19 +9,13 @@ work() {
 	(
 	cd $1
 
-	find . -type f -print |
-	while true; do
-		files=""
-		read file
+	files=""
+	for file in *; do
+		[ "$file" = "*" ] && break
 		[ $(( $RANDOM % 100  )) -le $RMPCT ] || continue
-		if [ "$files" ]; then
-			files="$files $file"
-		else
-			files="$file"
-		fi
-		[ "$files" ] || return
-		rm -f $files
+		files="$files $file"
 	done
+	[ "$files" ] && rm -f $files
 	)
 }
 
