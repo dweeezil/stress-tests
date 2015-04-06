@@ -24,16 +24,17 @@ work() {
 	cd $1
 	for file in {0..1000}; do
 		# Randomly overwrite
-		if [ "$RAND_OVERWRITE" -a -f "$file" ]; then
-			[ $(( $RANDOM % 100 )) -le $RAND_OVERWRITE ] && echo $file > $file
-			continue
-		fi
+		[ "$RAND_OVERWRITE" -a -f "$file" ] &&
+	 		[ $(( $RANDOM % 100 )) -le $RAND_OVERWRITE ] && echo $file > $file && continue
 
 		# Force-create
 		[ "$ONLY_CREATE" ] && echo $file > $file && continue
 
 		# Force-overwrite
-		[ "$ONLY_OVERWRITE" -a -f "$file" ] && echo $file > $file
+		[ "$ONLY_OVERWRITE" -a -f "$file" ] && echo $file > $file && continue
+
+		# Create if non-existent
+		[ -f "$file" ] || echo $file > $file
 	done
 	)
 }
