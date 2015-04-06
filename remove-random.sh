@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Chance of removing a file.
-: ${RMPCT:=5}
+: ${RMPCT:=2}
 
 cd /tank/fish || exit
 
@@ -12,7 +12,7 @@ work() {
 	files=""
 	for file in *; do
 		[ "$file" = "*" ] && break
-		[ $(( $RANDOM % 100  )) -le $RMPCT ] || continue
+		[ $(( $RANDOM % 100  )) -lt $RMPCT ] || continue
 		files="$files $file"
 	done
 	[ "$files" ] && rm -f $files
