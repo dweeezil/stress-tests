@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Chance of removing a file.
-: ${RMPCT:=10}
+: ${RMPCT:=5}
 
 cd /tank/fish || exit
 
