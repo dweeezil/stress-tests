@@ -32,7 +32,6 @@ prob() {
 dolargefile() {
 	# Create a 1MiB random file
 	dd if=/dev/urandom count=2048 of=$1 2> /dev/null
-	echo LARGEFILE: $PWD/$1
 }
 
 doregularfile() {
