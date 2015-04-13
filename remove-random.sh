@@ -39,5 +39,6 @@ while true; do
 	done
 	echo remove-random: $X
 	wait
+	[ -e stop ] && exit
 	X=$(( $X + 1 ))
 done

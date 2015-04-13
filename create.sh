@@ -8,8 +8,8 @@
 # Set ONLY_OVERWRITE to never create new files but to only overwrite existing once
 : ${ONLY_OVERWRITE:=0}
 
-# Probability of overwriting an existing file - default 20%
-: ${RAND_OVERWRITE:=200}
+# Probability of overwriting an existing file - default 5%
+: ${RAND_OVERWRITE:=500}
 
 # Probability of overwriting/creating a large file - default 0.1%
 : ${RAND_LARGEFILE:=1}
@@ -47,12 +47,12 @@ dofile() {
 }
 
 makefile() {
+	# Force-create
+	[ "$ONLY_CREATE" ] && dofile $1 && continue
+
 	# Randomly overwrite
 	[ "$RAND_OVERWRITE" -a -f "$1" ] &&
 		prob $RAND_OVERWRITE && dofile $1 && return
-
-	# Force-create
-	[ "$ONLY_CREATE" ] && dofile $1 && continue
 
 	# Force-overwrite
 	[ "$ONLY_OVERWRITE" -a -f $1 ] && dofile $1 && continue
@@ -90,5 +90,6 @@ while true; do
 	done
 	echo create: $X
 	wait
+	[ -e stop ] && exit
 	X=$(( $X + 1 ))
 done
