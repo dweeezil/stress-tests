@@ -3,10 +3,10 @@
 # NOTE: Probabilities are percentage * 100
 
 # Set ONLY_CREATE for seeding the filesystem
-: ${ONLY_CREATE:=0}
+: ${ONLY_CREATE:=}
 
 # Set ONLY_OVERWRITE to never create new files but to only overwrite existing once
-: ${ONLY_OVERWRITE:=0}
+: ${ONLY_OVERWRITE:=}
 
 # Probability of overwriting an existing file - default 5%
 : ${RAND_OVERWRITE:=500}
