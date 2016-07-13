@@ -48,14 +48,14 @@ dofile() {
 
 makefile() {
 	# Force-create
-	[ "$ONLY_CREATE" ] && dofile $1 && continue
+	[ "$ONLY_CREATE" ] && dofile $1 && return
 
 	# Randomly overwrite
 	[ "$RAND_OVERWRITE" -a -f "$1" ] &&
 		prob $RAND_OVERWRITE && dofile $1 && return
 
 	# Force-overwrite
-	[ "$ONLY_OVERWRITE" -a -f $1 ] && dofile $1 && continue
+	[ "$ONLY_OVERWRITE" -a -f $1 ] && dofile $1 && return
 
 	# Create if non-existent
 	[ -f "$1" ] || dofile $1
